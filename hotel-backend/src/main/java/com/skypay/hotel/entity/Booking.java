@@ -15,7 +15,7 @@ import java.time.temporal.ChronoUnit;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Booking {
-    private Long bookingId;
+    private Integer bookingId;
     private Integer userId;
     private Integer roomNumber;
     private LocalDate checkIn;
