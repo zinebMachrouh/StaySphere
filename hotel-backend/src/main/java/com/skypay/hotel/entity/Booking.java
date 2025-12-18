@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Data
 @Builder
@@ -27,6 +28,6 @@ public class Booking {
     private Integer userBalanceAfterBooking;
 
     public int getNumberOfNights() {
-        return (int) java.time.temporal.ChronoUnit.DAYS.between(checkIn, checkOut);
+        return (int) ChronoUnit.DAYS.between(checkIn, checkOut);
     }
 }

@@ -14,13 +14,9 @@ import java.time.LocalDateTime;
 public class User {
     private Integer userId;
     private Integer balance;
-    private LocalDateTime createdAt;
 
-    public User(Integer userId, Integer balance) {
-        this.userId = userId;
-        this.balance = balance;
-        this.createdAt = LocalDateTime.now();
-    }
+    @Builder.Default
+    private final LocalDateTime createdAt = LocalDateTime.now();
 
     public boolean hasBalance(int amount) {
         return this.balance >= amount;
