@@ -1,0 +1,13 @@
+package com.skypay.hotel.repository;
+
+import com.skypay.hotel.entity.Room;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface RoomRepository {
+    void save(Room room);
+    Optional<Room> findByNumber(int roomNumber);
+    List<Room> findAll();
+    List<Room> findAllOrderByCreationDateDesc();
+}
