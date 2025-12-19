@@ -75,6 +75,10 @@ public class BookingServiceImpl implements BookingService {
         LocalDate checkIn = request.checkIn();
         LocalDate checkOut = request.checkOut();
 
+        if (checkIn.isAfter(checkOut) || checkIn.isEqual(checkOut)) {
+            throw new BadRequestException("Check-out date must be after check-in date");
+        }
+
         if (roomIsBooked(request.roomNumber(), checkIn, checkOut))
             throw new ConflictException("Room is already booked within the selected dates");
 
