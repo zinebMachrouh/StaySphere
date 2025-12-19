@@ -5,6 +5,9 @@ import com.skypay.hotel.dto.booking.BookingRequest;
 import com.skypay.hotel.entity.Booking;
 import com.skypay.hotel.entity.Room;
 import com.skypay.hotel.entity.User;
+import com.skypay.hotel.exception.ConflictException;
+import com.skypay.hotel.exception.InsufficientBalanceException;
+import com.skypay.hotel.exception.ResourceNotFoundException;
 import com.skypay.hotel.mappers.BookingMapper;
 import com.skypay.hotel.mappers.RoomMapper;
 import com.skypay.hotel.repository.BookingRepository;
@@ -12,6 +15,7 @@ import com.skypay.hotel.repository.RoomRepository;
 import com.skypay.hotel.repository.UserRepository;
 import com.skypay.hotel.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final RoomMapper roomMapper;
 
     @Override
-    public void save(BookingRequest bookingRequest) {
+    public void save(BookingRequest bookingRequest) throws BadRequestException {
         User user = getUser(bookingRequest.userId());
         Room room = getRoom(bookingRequest.roomNumber());
         int totalCost = bookingRequest.getNumberOfNights() * room.getPricePerNight();
@@ -59,32 +63,32 @@ public class BookingServiceImpl implements BookingService {
 
     private User getUser(int userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
     }
 
     private Room getRoom(int roomNumber) {
         return roomRepository.findByNumber(roomNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Room does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Room does not exist"));
     }
 
-    private void validateBooking(BookingRequest bookingRequest, User user, int totalCost) {
+    private void validateBooking(BookingRequest bookingRequest, User user, int totalCost) throws BadRequestException {
         LocalDate checkIn = bookingRequest.checkIn();
         LocalDate checkOut = bookingRequest.checkOut();
 
         if (checkIn == null || checkOut == null)
-            throw new IllegalArgumentException("Check-in and check-out dates are required");
+            throw new BadRequestException("Check-in and check-out dates are required");
 
         if (!checkOut.isAfter(checkIn))
-            throw new IllegalArgumentException("Check-out date must be after check-in date");
+            throw new BadRequestException("Check-out date must be after check-in date");
 
         if (bookingRequest.getNumberOfNights() <= 0)
-            throw new IllegalArgumentException("Number of nights must be positive");
+            throw new BadRequestException("Number of nights must be positive");
 
         if (roomIsBooked(bookingRequest.roomNumber(), checkIn, checkOut))
-            throw new IllegalArgumentException("Room is already booked for the selected dates");
+            throw new ConflictException("Room is already booked for the selected dates");
 
         if (!user.hasBalance(totalCost))
-            throw new IllegalArgumentException("User has insufficient balance");
+            throw new InsufficientBalanceException("User has insufficient balance");
     }
 
     private Boolean roomIsBooked(int roomNumber, LocalDate newCheckIn, LocalDate newCheckOut) {
@@ -93,6 +97,7 @@ public class BookingServiceImpl implements BookingService {
                 .anyMatch(existing -> {
                     LocalDate existingIn = existing.getCheckIn();
                     LocalDate existingOut = existing.getCheckOut();
+                    // overlap if newIn < existingOut && newOut > existingIn
                     return newCheckIn.isBefore(existingOut) && newCheckOut.isAfter(existingIn);
                 });
     }
