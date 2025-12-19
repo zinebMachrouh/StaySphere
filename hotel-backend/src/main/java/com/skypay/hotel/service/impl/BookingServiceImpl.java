@@ -5,8 +5,8 @@ import com.skypay.hotel.dto.booking.BookingRequest;
 import com.skypay.hotel.entity.Booking;
 import com.skypay.hotel.entity.Room;
 import com.skypay.hotel.entity.User;
+import com.skypay.hotel.exception.BadRequestException;
 import com.skypay.hotel.exception.ConflictException;
-import com.skypay.hotel.exception.InsufficientBalanceException;
 import com.skypay.hotel.exception.ResourceNotFoundException;
 import com.skypay.hotel.mappers.BookingMapper;
 import com.skypay.hotel.mappers.RoomMapper;
@@ -15,7 +15,6 @@ import com.skypay.hotel.repository.RoomRepository;
 import com.skypay.hotel.repository.UserRepository;
 import com.skypay.hotel.service.BookingService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,7 +29,7 @@ public class BookingServiceImpl implements BookingService {
     private final RoomMapper roomMapper;
 
     @Override
-    public void save(BookingRequest bookingRequest) throws BadRequestException {
+    public void save(BookingRequest bookingRequest) {
         User user = getUser(bookingRequest.userId());
         Room room = getRoom(bookingRequest.roomNumber());
         int totalCost = bookingRequest.getNumberOfNights() * room.getPricePerNight();
@@ -71,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Room does not exist"));
     }
 
-    private void validateBooking(BookingRequest bookingRequest, User user, int totalCost) throws BadRequestException {
+    private void validateBooking(BookingRequest bookingRequest, User user, int totalCost) {
         LocalDate checkIn = bookingRequest.checkIn();
         LocalDate checkOut = bookingRequest.checkOut();
 
@@ -88,7 +87,7 @@ public class BookingServiceImpl implements BookingService {
             throw new ConflictException("Room is already booked for the selected dates");
 
         if (!user.hasBalance(totalCost))
-            throw new InsufficientBalanceException("User has insufficient balance");
+            throw new BadRequestException("User has insufficient balance");
     }
 
     private Boolean roomIsBooked(int roomNumber, LocalDate newCheckIn, LocalDate newCheckOut) {
@@ -97,7 +96,6 @@ public class BookingServiceImpl implements BookingService {
                 .anyMatch(existing -> {
                     LocalDate existingIn = existing.getCheckIn();
                     LocalDate existingOut = existing.getCheckOut();
-                    // overlap if newIn < existingOut && newOut > existingIn
                     return newCheckIn.isBefore(existingOut) && newCheckOut.isAfter(existingIn);
                 });
     }

@@ -1,6 +1,7 @@
 package com.skypay.hotel.repository;
 
 import com.skypay.hotel.entity.Booking;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;

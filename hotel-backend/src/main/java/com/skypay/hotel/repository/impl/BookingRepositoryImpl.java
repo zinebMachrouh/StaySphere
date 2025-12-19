@@ -2,14 +2,14 @@ package com.skypay.hotel.repository.impl;
 
 import com.skypay.hotel.entity.Booking;
 import com.skypay.hotel.repository.BookingRepository;
-import jdk.jfr.Registered;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-@Registered
+@Repository
 public class BookingRepositoryImpl implements BookingRepository {
     private final List<Booking> bookings = new ArrayList<>();
 
