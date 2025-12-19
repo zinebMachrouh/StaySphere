@@ -15,8 +15,9 @@ public class RoomRepositoryImpl implements RoomRepository {
     private final List<Room> rooms = new ArrayList<>();
 
     @Override
-    public void save(Room room) {
+    public Room save(Room room) {
         rooms.add(room);
+        return room;
     }
 
     @Override
@@ -24,11 +25,6 @@ public class RoomRepositoryImpl implements RoomRepository {
         return rooms.stream()
                 .filter(r -> roomNumber == r.getRoomNumber())
                 .findFirst();
-    }
-
-    @Override
-    public List<Room> findAll() {
-        return rooms;
     }
 
     @Override

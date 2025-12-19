@@ -14,8 +14,9 @@ public class UserRepositoryImpl implements UserRepository {
     private final List<User> users = new ArrayList<>();
 
     @Override
-    public void save(User user) {
+    public User save(User user) {
         users.add(user);
+        return user;
     }
 
     @Override
@@ -23,11 +24,6 @@ public class UserRepositoryImpl implements UserRepository {
         return users.stream()
                 .filter(u -> userId == u.getUserId())
                 .findFirst();
-    }
-
-    @Override
-    public List<User> findAll() {
-        return users;
     }
 
     @Override

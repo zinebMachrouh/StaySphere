@@ -1,9 +1,10 @@
 package com.skypay.hotel.service;
 
-import com.skypay.hotel.dto.BookingsAndRoomsResponse;
 import com.skypay.hotel.dto.booking.BookingRequest;
+import com.skypay.hotel.dto.booking.BookingResponse;
+import com.skypay.hotel.dto.booking.BookingsAndRoomsResponse;
 
 public interface BookingService {
-    void save(BookingRequest bookingRequest);
+    BookingResponse save(BookingRequest bookingRequest);
     BookingsAndRoomsResponse printAll();
 }

@@ -1,7 +1,8 @@
 package com.skypay.hotel.service.impl;
 
-import com.skypay.hotel.dto.BookingsAndRoomsResponse;
 import com.skypay.hotel.dto.booking.BookingRequest;
+import com.skypay.hotel.dto.booking.BookingResponse;
+import com.skypay.hotel.dto.booking.BookingsAndRoomsResponse;
 import com.skypay.hotel.entity.Booking;
 import com.skypay.hotel.entity.Room;
 import com.skypay.hotel.entity.User;
@@ -29,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final RoomMapper roomMapper;
 
     @Override
-    public void save(BookingRequest bookingRequest) {
+    public BookingResponse save(BookingRequest bookingRequest) {
         User user = getUser(bookingRequest.userId());
         Room room = getRoom(bookingRequest.roomNumber());
         int totalCost = bookingRequest.getNumberOfNights() * room.getPricePerNight();
@@ -49,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
                 .userBalanceAfterBooking(user.getBalance())
                 .build();
 
-        bookingRepository.save(booking);
+        return bookingMapper.toDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -70,33 +71,23 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Room does not exist"));
     }
 
-    private void validateBooking(BookingRequest bookingRequest, User user, int totalCost) {
-        LocalDate checkIn = bookingRequest.checkIn();
-        LocalDate checkOut = bookingRequest.checkOut();
+    private void validateBooking(BookingRequest request, User user, int totalCost) {
+        LocalDate checkIn = request.checkIn();
+        LocalDate checkOut = request.checkOut();
 
-        if (checkIn == null || checkOut == null)
-            throw new BadRequestException("Check-in and check-out dates are required");
-
-        if (!checkOut.isAfter(checkIn))
-            throw new BadRequestException("Check-out date must be after check-in date");
-
-        if (bookingRequest.getNumberOfNights() <= 0)
-            throw new BadRequestException("Number of nights must be positive");
-
-        if (roomIsBooked(bookingRequest.roomNumber(), checkIn, checkOut))
-            throw new ConflictException("Room is already booked for the selected dates");
+        if (roomIsBooked(request.roomNumber(), checkIn, checkOut))
+            throw new ConflictException("Room is already booked within the selected dates");
 
         if (!user.hasBalance(totalCost))
             throw new BadRequestException("User has insufficient balance");
     }
 
-    private Boolean roomIsBooked(int roomNumber, LocalDate newCheckIn, LocalDate newCheckOut) {
-        return bookingRepository.findAll().stream()
-                .filter(b -> b.getRoomNumber() != null && b.getRoomNumber().equals(roomNumber))
+    private boolean roomIsBooked(int roomNumber, LocalDate newCheckIn, LocalDate newCheckOut) {
+        return bookingRepository.findAllByRoomNumber(roomNumber).stream()
                 .anyMatch(existing -> {
                     LocalDate existingIn = existing.getCheckIn();
                     LocalDate existingOut = existing.getCheckOut();
-                    return newCheckIn.isBefore(existingOut) && newCheckOut.isAfter(existingIn);
+                    return newCheckIn.isBefore(existingOut) && existingIn.isBefore(newCheckOut);
                 });
     }
 }

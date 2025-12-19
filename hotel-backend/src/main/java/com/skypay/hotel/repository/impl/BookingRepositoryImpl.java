@@ -7,34 +7,22 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class BookingRepositoryImpl implements BookingRepository {
     private final List<Booking> bookings = new ArrayList<>();
 
     @Override
-    public void save(Booking booking) {
+    public Booking save(Booking booking) {
         bookings.add(booking);
+        return booking;
     }
 
     @Override
-    public Optional<Booking> findById(int bookingId) {
-        return bookings.stream()
-                .filter(b -> bookingId == b.getBookingId())
-                .findFirst();
-    }
-
-    @Override
-    public Optional<Booking> findByRoomNumber(int roomId) {
+    public List<Booking> findAllByRoomNumber(int roomId) {
         return bookings.stream()
                 .filter(b -> roomId == b.getRoomNumber())
-                .findFirst();
-    }
-
-    @Override
-    public List<Booking> findAll() {
-        return bookings;
+                .toList();
     }
 
     @Override

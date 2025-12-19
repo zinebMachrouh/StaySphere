@@ -1,6 +1,5 @@
-package com.skypay.hotel.dto;
+package com.skypay.hotel.dto.booking;
 
-import com.skypay.hotel.dto.booking.BookingResponse;
 import com.skypay.hotel.dto.room.RoomResponse;
 import lombok.Builder;
 

@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoomRepository {
-    void save(Room room);
+    Room save(Room room);
     Optional<Room> findByNumber(int roomNumber);
-    List<Room> findAll();
     List<Room> findAllOrderByCreationDateDesc();
     Optional<Room> findByTypeAndPrice(RoomType roomType, int pricePerNight);
 }

@@ -1,10 +1,7 @@
 package com.skypay.hotel.mappers;
 
-import com.skypay.hotel.dto.booking.BookingRequest;
-import com.skypay.hotel.dto.booking.BookingResponse;
 import com.skypay.hotel.dto.room.RoomRequest;
 import com.skypay.hotel.dto.room.RoomResponse;
-import com.skypay.hotel.entity.Booking;
 import com.skypay.hotel.entity.Room;
 import org.mapstruct.Mapper;
 
