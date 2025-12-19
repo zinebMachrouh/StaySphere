@@ -1,0 +1,11 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Hotel Booking Service
+
+logging:
+  level:
+    com.skypay.banking: DEBUG
+    org.springframework.web: INFO
