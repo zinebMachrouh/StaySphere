@@ -1,6 +1,5 @@
 package com.skypay.hotel.repository.impl;
 
-import com.skypay.hotel.entity.Room;
 import com.skypay.hotel.entity.User;
 import com.skypay.hotel.repository.UserRepository;
 import org.springframework.stereotype.Repository;

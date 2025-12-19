@@ -26,6 +26,13 @@ public class BookingRepositoryImpl implements BookingRepository {
     }
 
     @Override
+    public Optional<Booking> findByRoomNumber(int roomId) {
+        return bookings.stream()
+                .filter(b -> roomId == b.getRoomNumber())
+                .findFirst();
+    }
+
+    @Override
     public List<Booking> findAll() {
         return bookings;
     }

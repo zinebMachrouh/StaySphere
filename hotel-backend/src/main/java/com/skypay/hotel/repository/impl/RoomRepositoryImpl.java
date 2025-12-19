@@ -1,6 +1,7 @@
 package com.skypay.hotel.repository.impl;
 
 import com.skypay.hotel.entity.Room;
+import com.skypay.hotel.enums.RoomType;
 import com.skypay.hotel.repository.RoomRepository;
 import org.springframework.stereotype.Repository;
 
@@ -35,5 +36,12 @@ public class RoomRepositoryImpl implements RoomRepository {
         return rooms.stream()
                 .sorted(Comparator.comparing(Room::getCreatedAt).reversed())
                 .toList();
+    }
+
+    @Override
+    public Optional<Room> findByTypeAndPrice(RoomType roomType, int pricePerNight) {
+        return rooms.stream()
+                .filter(r -> r.getRoomType() == roomType && r.getPricePerNight() == pricePerNight)
+                .findFirst();
     }
 }
