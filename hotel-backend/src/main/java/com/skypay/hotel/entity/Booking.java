@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -15,19 +16,17 @@ import java.time.temporal.ChronoUnit;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Booking {
-    private Integer bookingId;
+    @Builder.Default
+    private final Integer bookingId = Instant.now().getNano();
     private Integer userId;
     private Integer roomNumber;
     private LocalDate checkIn;
     private LocalDate checkOut;
     private Integer totalCost;
-    private LocalDateTime createdAt;
-
     private RoomType roomTypeAtBooking;
     private Integer pricePerNightAtBooking;
     private Integer userBalanceAfterBooking;
 
-    public int getNumberOfNights() {
-        return (int) ChronoUnit.DAYS.between(checkIn, checkOut);
-    }
+    @Builder.Default
+    private final LocalDateTime createdAt = LocalDateTime.now();
 }
